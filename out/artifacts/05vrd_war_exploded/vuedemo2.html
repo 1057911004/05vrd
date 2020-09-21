@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="mydiv">
+    <p>{{msg}}</p>
+    <!--v-model让文本框的值和msg变量进行绑定 ,当文本框的值
+    改变时,msg变量的值也会跟着改变-->
+    <input type="text" v-model="msg">
+</div>
+<script src="js/vue.js"></script>
+<script>
+    let app = new Vue({
+        el:"#mydiv",
+        data:{
+            msg:"初始内容"
+        }
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="mydiv">
+    {{msg}}
+</div>
+
+<script src="js/vue.js"></script>
+<script>
+    //el=elements  元素的意思, 指对象中的数据是给页面中哪个元素服务的
+    let app = new Vue({
+        el:"#mydiv",
+        data:{
+            msg:"Hello Vue!"
+        }
+    });
+    //单向数据绑定: 当数据发生改变时 页面元素内容跟着变
+    setTimeout(function () {
+        app.msg="时间到了!";
+    },3000);
+</script>
+</body>
+</html>

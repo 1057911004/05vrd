@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <meta charset="UTF-8">
+    <title>VRD作品展示</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css"
+          href="bootstrap3/css/bt3.css">
+    <link rel="stylesheet" type="text/css"
+          href="bootstrap3/font-awesome-4.7.0/css/font-awesome.css"/>
+    <style type="text/css">
+        body {
+            background-color: #2e2e2e;
+            padding-top: 20px;
+        }
+
+        .navbar {
+            background-color: black;
+            border: none;
+        }
+
+        .navbar-brand > img {
+            position: relative;
+            top: -12px;
+        }
+
+        /*搜索框样式*/
+        #search > input {
+            border: none;
+            background-color: #383838;
+            height: 30px;
+            border-radius: 30px;
+            color: #A9A8A8;
+            padding: 10px 20px;
+            position: relative;
+            top: 10px;
+            outline: none; /*去掉点击后的边框*/
+        }
+
+        /*搜索按钮 放大镜的样式*/
+        #search > button {
+            background-color: rgba(0, 0, 0, 0); /*背景透明*/
+            border: none;
+            color: gray;
+            position: relative;
+            top: 13px;
+            left: -40px;
+        }
+
+        /*分类悬停黄色*/
+        .nav.navbar-nav > li > a:hover {
+            color: #ffc600;
+        }
+        /*瀑布流相关样式*/
+        .grid-item{
+            width: 200px;/*每个元素的宽度*/
+            margin: 0 10px 10px 0; /*每个元素之间的距离*/
+            position: relative;/*作为蓝色条的参照物*/
+        }
+        /*右侧内容样式*/
+        .list-group-item{
+            background-color: black;
+            border: none;
+        }
+        .list-group-item-heading{
+            background-color: #ffc600;
+        }
+        .media-heading{
+            color: #ffc600;
+        }
+        /*图片上方的蓝色条样式*/
+        .floatView{
+            width: 100%;
+            height: 40px;
+            background-color: #0aa1ed;
+            text-align: center;
+            color: #ffc600;
+            /*控制元素显示在最下方*/
+            position: absolute;
+            bottom: 0;
+        }
+        .floatView>p{
+            margin: 0;
+            font-size: 12px;
+        }
+        /*给文章详情修改字体颜色*/
+        .col-md-9{
+            color: #ffc600;
+        }
+    </style>
+</head>
+<body>
+<!--头部内容 并且是居中 container -->
+<header class="container">
+    <!--添加带图片的导航条-->
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <img alt="Brand" src="images/logo.png">
+                </a>
+            </div>
+            <!--无序列表 实现分类-->
+            <ul class="nav navbar-nav">
+                <li><a href="home">首页</a></li>
+                <li th:each="c:${cList}">
+                    <a th:href="'home?cid='+${c.id}" th:text="${c.name}">手绘</a>
+                </li>
+                <!-- 添加搜索框的li-->
+                <li>
+                    <form action="home">
+                        <div id="search">
+                            <input type="text" placeholder="Search" name="keyword">
+                            <button type="submit" class="glyphicon glyphicon-search">
+                            </button>
+                        </div>
+                    </form>
+                </li>
+            </ul>
+
+            <!--添加右侧导航条内容-->
+            <ul class="nav navbar-nav navbar-right">
+                <li th:if="${user}==null"><a href="login" class="fa fa-user-circle-o"> 管理员入口</a></li>
+                <li th:if="${user}!=null"><a href="showsend" class="fa fa-user-circle-o"> 发布作品</a></li>
+                <li th:if="${user}!=null"><a href="showbanners" class="fa fa-user-circle-o"> 轮播图</a></li>
+                <li th:if="${user}!=null"><a href="logout" class="fa fa-user-circle-o"> 退出</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+<!--主体区域-->
+<section class="container">
+
+    <!--通过栅格系统划分3:1-->
+    <div class="row">
+        <div class="col-md-9">
+            <!--文章详情开始-->
+            <h2 th:text="${product.title}"
+                class="page-header"></h2>
+            <div>
+                <span th:text="${product.author}+'发布于'+${product.createdStr}"></span>
+                <!--pull-right显示内容到右侧 类似于float:right-->
+                <span class="pull-right">
+                    <span th:text="${product.viewCount}" class="fa fa-eye"></span>
+                    <span th:text="${product.likeCount}" class="fa fa-thumbs-o-up"></span>
+                </span>
+            </div>
+            <p class="text-center">
+                <a th:href="'like?id='+${product.id}" class="btn btn-info">点赞</a>
+                <a th:href="'delete?id='+${product.id}"
+                   th:if="${user}!=null" class="btn btn-danger">删除</a>
+            </p>
+            <!--center-block 让图片居中显示-->
+            <img th:src="${product.imgPath}" class="img-responsive center-block">
+            <p class="text-center" th:text="${product.intro}"></p>
+            <!--文章详情结束-->
+
+        </div>
+        <div class="col-md-3">
+            <!--浏览最多开始-->
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-heading">
+                    <h4>
+                        <span class="fa fa-eye"> 浏览最多</span>
+                    </h4>
+                </li>
+                <li class="list-group-item">
+                    <!--媒体对象开始-->
+                    <div th:each="p:${viewList}" class="media">
+                        <div class="media-left">
+                            <a  th:href="'detail?id='+${p.id}">
+                                <img class="media-object" th:src="${p.imgPath}"
+                                     style="width: 50px;height: 50px">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <a  th:href="'detail?id='+${p.id}">
+                                <h4 th:text="${p.title}" class="media-heading">显示标题</h4>
+                            </a>
+                            <p th:text="${p.intro}">显示介绍</p>
+                        </div>
+                    </div>
+                    <!--媒体对象结束-->
+                </li>
+            </ul>
+            <!--浏览最多结束-->
+            <!--最受欢迎开始-->
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-heading">
+                    <h4>
+                        <span class="fa fa-thumbs-o-up"> 最受欢迎</span>
+                    </h4>
+                </li>
+                <li class="list-group-item">
+                    <!--媒体对象开始-->
+                    <div th:each="p:${likeList}" class="media">
+                        <div class="media-left">
+                            <a  th:href="'detail?id='+${p.id}">
+                                <img class="media-object" th:src="${p.imgPath}"
+                                     style="width: 50px;height: 50px">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <a  th:href="'detail?id='+${p.id}">
+                                <h4 th:text="${p.title}" class="media-heading">显示标题</h4>
+                            </a>
+                            <p th:text="${p.intro}">显示介绍</p>
+                        </div>
+                    </div>
+                    <!--媒体对象结束-->
+                </li>
+            </ul>
+            <!--最受欢迎结束-->
+        </div>
+    </div>
+
+
+</section>
+
+
+</body>
+<script type="text/javascript" src="bootstrap3/jquery.min.js"></script>
+<script type="text/javascript" src="bootstrap3/js/bootstrap.js"></script>
+<script type="text/javascript" src="bootstrap3/js/holder.js"></script>
+<script type="text/javascript" src="bootstrap3/js/html5shiv.min.js"></script>
+<script type="text/javascript" src="bootstrap3/js/css3-mediaqueries.js"></script>
+<script type="text/javascript" src="bootstrap3/js/respond.min.js"></script>
+<!--引入瀑布流框架-->
+<script src="js/imagesloaded.pkgd.js"></script>
+<script src="js/masonry.pkgd.min.js"></script>
+<script>
+
+
+</script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

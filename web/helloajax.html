@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input type="button" value="发出异步请求">
+<script src="bootstrap3/jquery.min.js"></script>
+<script>
+    $("input").click(function () {
+       //发出异步请求
+        //type:请求方式 get/post
+        //url:请求路径     hello  =  http://localhost:8080/hello
+        //data: 请求参数
+        //success: 请求完成后 执行的方法
+        //msg: 服务器返回的内容  变量名可以换
+        $.ajax({
+            type:"get",
+            url:"hello",
+            data:"info=Hello Ajax!",
+            success:function (msg) {
+                alert(msg);
+            }
+        });
+    });
+</script>
+</body>
+</html>
